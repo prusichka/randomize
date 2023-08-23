@@ -20,6 +20,7 @@ function showAnimatedResult(numberToDisplay: number): void {
     duration: 1700,
   })
 }
+// Test commit
 </script>
 
 <template>
