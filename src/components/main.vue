@@ -1,30 +1,25 @@
 <script setup lang="ts">
-import { ref, Ref, watch } from 'vue';
+import { Ref, ref } from 'vue';
+import anime from 'animejs/lib/anime.es.js'
 
-const randomNumeric: Ref<number> = ref(0);
-const minRange: Ref<number> = ref(1);
-const maxRange: Ref<number> = ref(100);
-const intervalId: Ref<number> = ref(0);
-const isGenerateBtnDisabled: Ref<boolean> = ref(false)
+const minNumericRange: Ref<number> = ref(0)
+const maxNumericRange: Ref<number> = ref(100)
 
-const getRandomNumeric: () => void = () => {
-  isGenerateBtnDisabled.value = true
-  const localMin = Math.ceil(minRange.value),
-    localMax = Math.floor(maxRange.value)
+function generateNumber(): void {
+  const numericRange: number = maxNumericRange.value - minNumericRange.value + 1
+  const generatedRandomNumber: number = Math.floor(Math.random() * numericRange) + minNumericRange.value
+  showAnimatedResult(generatedRandomNumber)
+}
 
-  intervalId.value = setInterval(() => {
-    randomNumeric.value =
-      Math.floor(Math.random() * (localMax - localMin + 1)) + localMin;
-  }, 500);
-};
-
-
-watch(intervalId, () => {
-  setTimeout(() => {
-    clearTimeout(intervalId.value);
-    isGenerateBtnDisabled.value = false
-  }, 2000);
-});
+function showAnimatedResult(numberToDisplay: number): void {
+  anime({
+    targets: '#result',
+    textContent: numberToDisplay,
+    round: 1,
+    easing: 'easeInOutQuad',
+    duration: 1700,
+  })
+}
 </script>
 
 <template>
@@ -37,14 +32,13 @@ watch(intervalId, () => {
           </h2>
           <div class="flex-col mb-4">
             <p class="text-2xl font-mono text-cyan-900 mb-3">Min</p>
-            <input v-model="minRange" class="w-3/4 h-10 px-3 py-2" placeholder="min" type="text" />
+            <input v-model.number="minNumericRange" class="w-3/4 h-10 px-3 py-2" placeholder="min" type="number" />
           </div>
           <div class="flex-col mb-16">
             <p class="text-2xl font-mono text-cyan-900 mb-3">Max</p>
-            <input v-model="maxRange" class="w-3/4 h-10 px-3 py-2" placeholder="max" type="text" />
+            <input v-model.number="maxNumericRange" class="w-3/4 h-10 px-3 py-2" placeholder="max" type="number" />
           </div>
-          <button @click="getRandomNumeric" :disabled='isGenerateBtnDisabled'
-            class="w-3/4 px-4 py-2 rounded-md bg-emerald-600 text-white text-2xl">
+          <button @click="generateNumber" class="w-3/4 px-4 py-2 rounded-md bg-emerald-600 text-white text-2xl">
             Generate
           </button>
         </div>
@@ -52,17 +46,15 @@ watch(intervalId, () => {
           <div class="grid grid-cols-2 gap-2 mb-9">
             <div class="">
               <h3 class="text-4xl text-cyan-900 font-mono mb-2">Min Range</h3>
-              <p class="text-2xl text-cyan-900 font-mono">{{ minRange }}</p>
+              <p class="text-2xl text-cyan-900 font-mono">{{ minNumericRange }}</p>
             </div>
             <div class="">
               <h3 class="text-4xl text-cyan-900 font-mono mb-2">Max Range</h3>
-              <p class="text-2xl text-cyan-900 font-mono">{{ maxRange }}</p>
+              <p class="text-2xl text-cyan-900 font-mono">{{ maxNumericRange }}</p>
             </div>
           </div>
           <div class="w-full flex justify-center items-center h-64 border-solid border-cyan-400 border-2">
-            <h5 class="text-8xl text-cyan-900 font-mono">
-              {{ randomNumeric }}
-            </h5>
+            <h5 id="result" class="text-8xl text-cyan-900 font-mono"></h5>
           </div>
         </div>
       </div>
